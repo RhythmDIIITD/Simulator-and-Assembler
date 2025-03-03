@@ -113,12 +113,12 @@ Data_Memory_Dictionary = {
 
 def Identify_Intrusction_Dictionary(string):
     func3 = string[17:20]
-    opcode = string[25:32]
+    opcode = string[25:32] 
 
     if func3 == "000" and opcode == "0110011":
-        if string[31:25] == "0000000":
+        if string[0:7] == "0000000":
             return "add"
-        elif string[31:25] == "0100000":
+        elif string[0:7] == "0100000":
             return "sub"
     elif func3 == "010" and opcode == "0110011":
         return "slt"
@@ -153,15 +153,25 @@ def instructioncreation(list):
         Instructionrecognised.append(Identify_Intrusction_Dictionary(instruction))
     return Instructionrecognised
     
-instruction_list = readfile("simple_1.txt")
+Trace_list = []
+instruction_list = readfile("simple_5.txt")
 print(instruction_list)
 
 Written_Instruction_List = instructioncreation(instruction_list)
 print(Written_Instruction_List)
 
+def decimaltobinary(number):
+    number = int(number)
+    if number<0:
+        binary = format((1<<32)+number,"032b")
+    else:
+        binary = format(number, "032b")
+    return binary
 
 def Instruction_Executor(listbinary, listwritten):
+    PC = 0
     for i in range(len(listbinary)):
+
         if listwritten[i] == "add":
             add(listbinary[i])
         elif listwritten[i] == "sub":
@@ -173,7 +183,7 @@ def Instruction_Executor(listbinary, listwritten):
         elif listwritten[i] == "or":
             orfunction(listbinary[i])
         elif listwritten[i] == "and":
-            and_(listbinary[i])
+            andfunction(listbinary[i])
         elif listwritten[i] == "addi":
             addi(listbinary[i])
         elif listwritten[i] == "lw":
@@ -193,34 +203,73 @@ def Instruction_Executor(listbinary, listwritten):
         else:
             errorinstructionnotfound()
 
+        PC = PC + 4
+        Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+
+
+
+def display_register_values(PC, Register_Value_Dictionary):
+    string = "0b" + decimaltobinary(PC) + " "
+    count = 2
+    for key, value in Register_Value_Dictionary.items():
+        if count == 4:
+            string = string + "0b" + decimaltobinary(value) + "\n"
+            count = 1
+        else:
+            string = string + "0b" + decimaltobinary(value) + " "
+            count = count+1
+
+    string = string + "\n"
+    return string
+
+
+
 
 def add(string):
-
-    pass
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
+    rd_value = int(Register_Value_Dictionary[rs1]) + int(Register_Value_Dictionary[rs2])
+    Register_Value_Dictionary[rd] = str(rd_value)
+    return
 
 def sub(string):
-
-    pass
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
+    rd_value = int(Register_Value_Dictionary[rs1]) - int(Register_Value_Dictionary[rs2])
+    Register_Value_Dictionary[rd] = str(rd_value)
+    return
 
 def slt(string):
-
-    pass
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
+    if int(Register_Value_Dictionary[rs1]) < int(Register_Value_Dictionary[rs2]):
+        rd_value = 1
+    else:
+        rd_value = 0
+    Register_Value_Dictionary[rd] = str(rd_value)
+    return
 
 def srl(string):
-
-    pass
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
+    rd_value = int(Register_Value_Dictionary[rs1])//(2**(min(int(Register_Value_Dictionary[rs2]), 31)))
+    Register_Value_Dictionary[rd] = str(rd_value)
+    return
 
 def orfunction(string):
-
     pass
 
-def and_(string):
+def andfunction(string):
 
     pass
 
 def addi(string):
-
     pass
+    
 
 def lw(string):
 
@@ -255,3 +304,28 @@ def errorinstructionnotfound():
     print("Error: Instruction not found")
 
 
+Instruction_Executor(instruction_list, Written_Instruction_List)
+Final_Memory_list = []
+def display_register_values(list):
+
+    for key, value in Data_Memory_Dictionary.items():
+        string = key + ":" + "0b" + decimaltobinary(value)
+        list.append(string)
+
+    return
+
+display_register_values(Final_Memory_list)
+
+def outputfile(file_path,list1,list2):
+    with open(file_path, "w") as file:
+        for line in list1:
+                file.write(line)
+                print("")
+        for line in list2:
+                file.write(line)
+                file.write("\n")
+        
+    return
+
+
+outputfile("simple_1_output.txt", Trace_list,Final_Memory_list)
