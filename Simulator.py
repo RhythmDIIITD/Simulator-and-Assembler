@@ -168,46 +168,66 @@ def decimaltobinary(number):
         binary = format(number, "032b")
     return binary
 
-def Instruction_Executor(listbinary, listwritten):
+def PC_dictionary(listwritten):
     PC = 0
+    PC_Dictionary = {}
+    for i in range(len(listwritten)):
+        PC_Dictionary[i] = PC
+        PC = PC + 4
+    return PC_Dictionary
+
+def Instruction_Executor(listbinary, listwritten):
     for i in range(len(listbinary)):
 
         if listwritten[i] == "add":
+            PC = PC_list[i]
             add(listbinary[i])
         elif listwritten[i] == "sub":
+            PC = PC_list[i]
             sub(listbinary[i])
         elif listwritten[i] == "slt":
+            PC = PC_list[i]
             slt(listbinary[i])
         elif listwritten[i] == "srl":
+            PC = PC_list[i]
             srl(listbinary[i])
         elif listwritten[i] == "or":
+            PC = PC_list[i]
             orfunction(listbinary[i])
         elif listwritten[i] == "and":
+            PC = PC_list[i]
             andfunction(listbinary[i])
         elif listwritten[i] == "addi":
+            PC = PC_list[i]
             addi(listbinary[i])
         elif listwritten[i] == "lw":
+            PC = PC_list[i]
             lw(listbinary[i])
         elif listwritten[i] == "jalr":
+            PC = PC_list[i]
             jalr(listbinary[i])
         elif listwritten[i] == "sw":
+            PC = PC_list[i]
             sw(listbinary[i])
         elif listwritten[i] == "beq":
+            PC = PC_list[i]
             beq(listbinary[i])
         elif listwritten[i] == "bne":
+            PC = PC_list[i]
             bne(listbinary[i])
         elif listwritten[i] == "blt":
+            PC = PC_list[i]
             blt(listbinary[i])
         elif listwritten[i] == "jal":
+            PC = PC_list[i]
             jal(listbinary[i])
         else:
             errorinstructionnotfound()
 
-        PC = PC + 4
         Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
 
-
-
+PC_list = PC_dictionary(Written_Instruction_List)
+print(PC_list)
 def display_register_values(PC, Register_Value_Dictionary):
     string = "0b" + decimaltobinary(PC) + " "
     count = 2
@@ -222,15 +242,13 @@ def display_register_values(PC, Register_Value_Dictionary):
     string = string + "\n"
     return string
 
-
-
-
 def add(string):
     rd = Binary_Address_to_CommonName_Dic[string[20:25]]
     rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
     rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
     rd_value = int(Register_Value_Dictionary[rs1]) + int(Register_Value_Dictionary[rs2])
     Register_Value_Dictionary[rd] = str(rd_value)
+    Register_Value_Dictionary["x0"] = "0"
     return
 
 def sub(string):
@@ -239,6 +257,7 @@ def sub(string):
     rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
     rd_value = int(Register_Value_Dictionary[rs1]) - int(Register_Value_Dictionary[rs2])
     Register_Value_Dictionary[rd] = str(rd_value)
+    Register_Value_Dictionary["x0"] = "0"
     return
 
 def slt(string):
@@ -250,6 +269,7 @@ def slt(string):
     else:
         rd_value = 0
     Register_Value_Dictionary[rd] = str(rd_value)
+    Register_Value_Dictionary["x0"] = "0"
     return
 
 def srl(string):
@@ -258,29 +278,89 @@ def srl(string):
     rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
     rd_value = int(Register_Value_Dictionary[rs1])//(2**(min(int(Register_Value_Dictionary[rs2]), 31)))
     Register_Value_Dictionary[rd] = str(rd_value)
+    Register_Value_Dictionary["x0"] = "0"
     return
+def twos_complement(string):
+    num_bits = len(string)
+    integer = int(string, 2)
+
+    if string[0] == '1':
+        integer -= 2**num_bits
+    return integer
 
 def orfunction(string):
-    pass
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
+    rs1_binary = decimaltobinary(int(Register_Value_Dictionary[rs1]))
+    rs2_binary = decimaltobinary(int(Register_Value_Dictionary[rs2]))
+    rd_value = ""
+    for i in range(len(rs2_binary)):
+        if rs2_binary[i] == "1" and rs1_binary[i] == "1":
+            rd_value = rd_value + "1"
+        elif rs2_binary[i] == "1" and rs1_binary[i] == "0":
+            rd_value = rd_value + "1"
+        elif rs2_binary[i] == "0" and rs1_binary[i] == "1":
+            rd_value = rd_value + "1"
+        else:
+            rd_value = rd_value + "0"
+    Register_Value_Dictionary[rd] = str(twos_complement(rd_value))
+    Register_Value_Dictionary["x0"] = "0"
+    return
 
 def andfunction(string):
-
-    pass
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
+    rs1_binary = decimaltobinary(int(Register_Value_Dictionary[rs1]))
+    rs2_binary = decimaltobinary(int(Register_Value_Dictionary[rs2]))
+    rd_value = ""
+    for i in range(len(rs2_binary)):
+        if rs2_binary[i] == "1" and rs1_binary[i] == "1":
+            rd_value = rd_value + "1"
+        elif rs2_binary[i] == "1" and rs1_binary[i] == "0":
+            rd_value = rd_value + "0"
+        elif rs2_binary[i] == "0" and rs1_binary[i] == "1":
+            rd_value = rd_value + "0"
+        else:
+            rd_value = rd_value + "0"
+    Register_Value_Dictionary[rd] = str(twos_complement(rd_value))
+    Register_Value_Dictionary["x0"] = "0"
+    return
 
 def addi(string):
-    pass
-    
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    immediate = twos_complement(string[0:12])
+
+
+    rd_value = int(Register_Value_Dictionary[rs1]) + immediate
+    Register_Value_Dictionary[rd] = str(rd_value)
+    Register_Value_Dictionary["x0"] = "0"
+    return
+
+def decimaltohex(string):
+    string = format(string & 0xFFFFFFFF, '08x')
+    string = "0x" + string
+    return string
 
 def lw(string):
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    immediate = twos_complement(string[0:12])
 
-    pass
+
+    memory_adress_integer = int(Register_Value_Dictionary[rs1]) + immediate
+    memory_adress = decimaltohex(memory_adress_integer)
+    data_from_memory = Data_Memory_Dictionary[memory_adress]
+    Register_Value_Dictionary[rd] = data_from_memory
+    Register_Value_Dictionary["x0"] = "0"
+    return
 
 def jalr(string):
-
     pass
 
 def sw(string):
-
     pass
 
 def beq(string):
@@ -301,7 +381,8 @@ def jal(string):
 
 def errorinstructionnotfound():
 
-    print("Error: Instruction not found")
+    print("error: instruction not found")
+
 
 
 Instruction_Executor(instruction_list, Written_Instruction_List)
