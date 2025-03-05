@@ -167,7 +167,7 @@ def decimaltobinary(number):
 
 def Instruction_Executor(listbinary, dictionary):
     PC = 0
-    for i in range(len(listbinary)):
+    for i in range(0,10000):
         if dictionary[PC] == "00000000000000000000000001100011":
             Trace_list.append(display_register_values(PC+4, Register_Value_Dictionary))
             break
@@ -220,11 +220,11 @@ def Instruction_Executor(listbinary, dictionary):
             PC = nextPC
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
         elif instruction == "bne":
-            nextPC = bne(dictionary[PC])
+            nextPC = bne(PC,dictionary[PC])
             PC = nextPC
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
         elif instruction == "blt":
-            nextPC = blt(dictionary[PC])
+            nextPC = blt(PC,dictionary[PC])
             PC = nextPC
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
         elif instruction == "jal":
@@ -241,7 +241,7 @@ def display_register_values(PC, Register_Value_Dictionary):
     count = 2
     for key, value in Register_Value_Dictionary.items():
         if count == 4:
-            string = string + "0b" + decimaltobinary(value) + "\n"
+            string = string + "0b" + decimaltobinary(value) + " "
             count = 1
         else:
             string = string + "0b" + decimaltobinary(value) + " "
@@ -481,6 +481,7 @@ instruction_list = readfile(file_path)
 
 Instruction_Memory = instructioncreation(instruction_list)
 
+
 Instruction_Executor(instruction_list, Instruction_Memory)
 Final_Memory_list = []
 def display_register_values(list):
@@ -504,6 +505,5 @@ def outputfile(file_path,list1,list2):
                 file.write("\n")
         
     return
-
 
 outputfile(outputfilepath, Trace_list,Final_Memory_list)
