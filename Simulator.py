@@ -1,3 +1,4 @@
+import sys
 
 def readfile(file_path):
     list = []
@@ -167,6 +168,9 @@ def decimaltobinary(number):
 def Instruction_Executor(listbinary, dictionary):
     PC = 0
     for i in range(len(listbinary)):
+        if dictionary[PC] == "00000000000000000000000001100011":
+            Trace_list.append(display_register_values(PC+4, Register_Value_Dictionary))
+            break
         if PC not in dictionary:
             break
         instruction = Identify_Intrusction_Dictionary(PC, dictionary)
@@ -450,12 +454,12 @@ def jal(PC,string):
     immediate19to12 = string[12:18]
     immediate11th = string[11]
     immediate10to1 = string[1:11]
-    immediate = twos_complement(immediate20th + immediate19to12 + immediate11th + immediate10to1 + "0")
+    immediate = twos_complement(immediate20th + immediate19to12 + immediate11th + immediate10to1)
     rd = Binary_Address_to_CommonName_Dic[string[20:25]]
     rd_value = PC + 4
     Register_Value_Dictionary[rd] = str(rd_value)
     Register_Value_Dictionary["x0"] = "0"
-    FinalPCstring = decimaltobinary(immediate)
+    FinalPCstring = decimaltobinary(immediate + PC)
     FinalPCstring = FinalPCstring[:31] + "0"
     Final =  twos_complement(FinalPCstring)
     return Final
@@ -465,12 +469,17 @@ def errorinstructionnotfound():
 
     print("error: instruction not found")
 
+if len(sys.argv) != 3:
+    print("Usage: python Simulator.py <input_file> <output_file>")
+    sys.exit(1)
+
+file_path = sys.argv[1] 
+outputfilepath = sys.argv[2]   
 
 Trace_list = []
-instruction_list = readfile("simple_5.txt")
+instruction_list = readfile(file_path)
 
 Instruction_Memory = instructioncreation(instruction_list)
-print(Instruction_Memory)
 
 Instruction_Executor(instruction_list, Instruction_Memory)
 Final_Memory_list = []
@@ -484,6 +493,7 @@ def display_register_values(list):
 
 display_register_values(Final_Memory_list)
 
+
 def outputfile(file_path,list1,list2):
     with open(file_path, "w") as file:
         for line in list1:
@@ -496,4 +506,4 @@ def outputfile(file_path,list1,list2):
     return
 
 
-outputfile("simple_1_output.txt", Trace_list,Final_Memory_list)
+outputfile(outputfilepath, Trace_list,Final_Memory_list)
