@@ -44,7 +44,7 @@ Binary_Address_to_CommonName_Dic = {
 Register_Value_Dictionary = {
     "x0" : "0",
     "x1" : "0",
-    "x2" : "0",
+    "x2" : "380",
     "x3" : "0",
     "x4" : "0",
     "x5" : "0",
@@ -154,7 +154,7 @@ def instructioncreation(list):
     return Instructionrecognised
     
 Trace_list = []
-instruction_list = readfile("simple_5.txt")
+instruction_list = readfile("simple_4_new.txt")
 print(instruction_list)
 
 Written_Instruction_List = instructioncreation(instruction_list)
@@ -169,7 +169,7 @@ def decimaltobinary(number):
     return binary
 
 def PC_dictionary(listwritten):
-    PC = 0
+    PC = 4
     PC_Dictionary = {}
     for i in range(len(listwritten)):
         PC_Dictionary[i] = PC
@@ -358,7 +358,12 @@ def lw(string):
     return
 
 def jalr(string):
-    pass
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    immediate = twos_complement(string[0:12])
+    print(rs1)
+    print(rd)
+    print(immediate)
 
 def sw(string):
     pass
