@@ -346,7 +346,7 @@ def addi(string):
     Register_Value_Dictionary[rd] = str(rd_value)
     Register_Value_Dictionary["x0"] = "0"
     return
-
+stack_memory = {}
 def decimaltohex(string):
     string = format(string & 0xFFFFFFFF, '08x')
     string = "0x" + string
@@ -360,7 +360,11 @@ def lw(string):
 
     memory_adress_integer = int(Register_Value_Dictionary[rs1]) + immediate
     memory_adress = decimaltohex(memory_adress_integer)
-    data_from_memory = Data_Memory_Dictionary[memory_adress]
+    if memory_adress in Data_Memory_Dictionary:
+        data_from_memory = Data_Memory_Dictionary[memory_adress]
+    else:
+        stack_memory[memory_adress] = "0"
+        data_from_memory = stack_memory[memory_adress]
     Register_Value_Dictionary[rd] = data_from_memory
     Register_Value_Dictionary["x0"] = "0"
     return
@@ -391,9 +395,16 @@ def sw(string):
 
     memory_adress_integer = int(Register_Value_Dictionary[rs1]) + immediate
     memory_adress = decimaltohex(memory_adress_integer)
-    Data_Memory_Dictionary[memory_adress] = Register_Value_Dictionary[rs2]
-    Register_Value_Dictionary["x0"] = "0"
-    return
+
+    if memory_adress in Data_Memory_Dictionary:
+        Data_Memory_Dictionary[memory_adress] = Register_Value_Dictionary[rs2]
+        Register_Value_Dictionary["x0"] = "0"
+        return
+
+    else:
+        stack_memory[memory_adress] = Register_Value_Dictionary[rs2]
+        Register_Value_Dictionary["x0"] = "0"
+        return
 
 def beq(PC,string):
     immediate12th = string[0]
