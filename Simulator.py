@@ -111,7 +111,8 @@ Data_Memory_Dictionary = {
     "0x0001007C" : "0"
 }
 
-def Identify_Intrusction_Dictionary(string):
+def Identify_Intrusction_Dictionary(PC, dictionary):
+    string = dictionary[PC]
     func3 = string[17:20]
     opcode = string[25:32] 
 
@@ -148,17 +149,12 @@ def Identify_Intrusction_Dictionary(string):
         return "error"
     
 def instructioncreation(list):
-    Instructionrecognised = []
-    for instruction in list:
-        Instructionrecognised.append(Identify_Intrusction_Dictionary(instruction))
+    Instructionrecognised = {}
+    PC = 0
+    for i in range(len(list)):
+        Instructionrecognised[PC] = list[i]
+        PC = PC + 4
     return Instructionrecognised
-    
-Trace_list = []
-instruction_list = readfile("simple_4_new.txt")
-print(instruction_list)
-
-Written_Instruction_List = instructioncreation(instruction_list)
-print(Written_Instruction_List)
 
 def decimaltobinary(number):
     number = int(number)
@@ -168,66 +164,74 @@ def decimaltobinary(number):
         binary = format(number, "032b")
     return binary
 
-def PC_dictionary(listwritten):
-    PC = 4
-    PC_Dictionary = {}
-    for i in range(len(listwritten)):
-        PC_Dictionary[i] = PC
-        PC = PC + 4
-    return PC_Dictionary
-
-def Instruction_Executor(listbinary, listwritten):
+def Instruction_Executor(listbinary, dictionary):
+    PC = 0
     for i in range(len(listbinary)):
-
-        if listwritten[i] == "add":
-            PC = PC_list[i]
-            add(listbinary[i])
-        elif listwritten[i] == "sub":
-            PC = PC_list[i]
-            sub(listbinary[i])
-        elif listwritten[i] == "slt":
-            PC = PC_list[i]
-            slt(listbinary[i])
-        elif listwritten[i] == "srl":
-            PC = PC_list[i]
-            srl(listbinary[i])
-        elif listwritten[i] == "or":
-            PC = PC_list[i]
-            orfunction(listbinary[i])
-        elif listwritten[i] == "and":
-            PC = PC_list[i]
-            andfunction(listbinary[i])
-        elif listwritten[i] == "addi":
-            PC = PC_list[i]
-            addi(listbinary[i])
-        elif listwritten[i] == "lw":
-            PC = PC_list[i]
-            lw(listbinary[i])
-        elif listwritten[i] == "jalr":
-            PC = PC_list[i]
-            jalr(listbinary[i])
-        elif listwritten[i] == "sw":
-            PC = PC_list[i]
-            sw(listbinary[i])
-        elif listwritten[i] == "beq":
-            PC = PC_list[i]
-            beq(listbinary[i])
-        elif listwritten[i] == "bne":
-            PC = PC_list[i]
-            bne(listbinary[i])
-        elif listwritten[i] == "blt":
-            PC = PC_list[i]
-            blt(listbinary[i])
-        elif listwritten[i] == "jal":
-            PC = PC_list[i]
-            jal(listbinary[i])
+        if PC not in dictionary:
+            break
+        instruction = Identify_Intrusction_Dictionary(PC, dictionary)
+        if instruction == "add":
+            add(dictionary[PC])
+            PC = PC + 4
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "sub":
+            sub(dictionary[PC])
+            PC = PC + 4
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "slt":
+            slt(dictionary[PC])
+            PC = PC + 4
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "srl":
+            srl(dictionary[PC])
+            PC = PC + 4
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "or":
+            orfunction(dictionary[PC])
+            PC = PC + 4
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "and":
+            andfunction(dictionary[PC])
+            PC = PC + 4
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "addi":
+            addi(dictionary[PC])
+            PC = PC + 4
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "lw":
+            lw(dictionary[PC])
+            PC = PC + 4
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "jalr":
+            jalr(PC,dictionary[PC])
+            nextPC = jalrJUMP(PC,dictionary[PC])
+            PC = nextPC
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "sw":
+            sw(dictionary[PC])
+            PC = PC + 4
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "beq":
+            nextPC = beq(PC,dictionary[PC])
+            PC = nextPC
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "bne":
+            nextPC = bne(dictionary[PC])
+            PC = nextPC
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "blt":
+            nextPC = blt(dictionary[PC])
+            PC = nextPC
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+        elif instruction == "jal":
+            nextPC = jal(PC,dictionary[PC])
+            PC = nextPC
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
         else:
             errorinstructionnotfound()
+        
+    return
 
-        Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
-
-PC_list = PC_dictionary(Written_Instruction_List)
-print(PC_list)
 def display_register_values(PC, Register_Value_Dictionary):
     string = "0b" + decimaltobinary(PC) + " "
     count = 2
@@ -357,40 +361,118 @@ def lw(string):
     Register_Value_Dictionary["x0"] = "0"
     return
 
-def jalr(string):
+def jalr(PC,string):
     rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rd_value = PC + 4
+    Register_Value_Dictionary[rd] = str(rd_value)
+    Register_Value_Dictionary["x0"] = "0"
+    return
+
+def jalrJUMP(PC,string):
     rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
     immediate = twos_complement(string[0:12])
-    print(rs1)
-    print(rd)
-    print(immediate)
+    FinalPC = int(Register_Value_Dictionary[rs1]) + immediate
+    FinalPCstring = decimaltobinary(FinalPC)
+    FinalPCstring = FinalPCstring[:31] + "0"
+    Final =  twos_complement(FinalPCstring)
+    return Final
+
 
 def sw(string):
-    pass
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    immediate1 = string[0:7]
+    immediate2 = string[20:25]
+    immediate = twos_complement(immediate1 + immediate2)
 
-def beq(string):
+    memory_adress_integer = int(Register_Value_Dictionary[rs1]) + immediate
+    memory_adress = decimaltohex(memory_adress_integer)
+    Data_Memory_Dictionary[memory_adress] = Register_Value_Dictionary[rs2]
+    Register_Value_Dictionary["x0"] = "0"
+    return
 
-    pass
+def beq(PC,string):
+    immediate12th = string[0]
+    immediate10to5 = string[1:7]
+    immediate4to1 = string[20:24]
+    immediate11th = string[24]
+    immediate = twos_complement(immediate12th + immediate11th + immediate10to5 + immediate4to1 + "0")
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
 
-def bne(string):
 
-    pass
+    if Register_Value_Dictionary[rs1] == Register_Value_Dictionary[rs2]:
+        PC = PC + immediate
+        Register_Value_Dictionary["x0"] = "0"
+        return PC
+    else:
+        Register_Value_Dictionary["x0"] = "0"
+        return PC + 4
 
-def blt(string):
+def bne(PC,string):
+    immediate12th = string[0]
+    immediate10to5 = string[1:7]
+    immediate4to1 = string[20:24]
+    immediate11th = string[24]
+    immediate = twos_complement(immediate12th + immediate11th + immediate10to5 + immediate4to1 + "0")
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
 
-    pass
 
-def jal(string):
+    if Register_Value_Dictionary[rs1] != Register_Value_Dictionary[rs2]:
+        PC = PC + immediate
+        Register_Value_Dictionary["x0"] = "0"
+        return PC
+    else:
+        Register_Value_Dictionary["x0"] = "0"
+        return PC + 4
 
-    pass
+def blt(PC,string):
+    immediate12th = string[0]
+    immediate10to5 = string[1:7]
+    immediate4to1 = string[20:24]
+    immediate11th = string[24]
+    immediate = twos_complement(immediate12th + immediate11th + immediate10to5 + immediate4to1 + "0")
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
+
+
+    if Register_Value_Dictionary[rs1] < Register_Value_Dictionary[rs2]:
+        PC = PC + immediate
+        Register_Value_Dictionary["x0"] = "0"
+        return PC
+    else:
+        Register_Value_Dictionary["x0"] = "0"
+        return PC + 4
+
+def jal(PC,string):
+    immediate20th = string[0]
+    immediate19to12 = string[12:18]
+    immediate11th = string[11]
+    immediate10to1 = string[1:11]
+    immediate = twos_complement(immediate20th + immediate19to12 + immediate11th + immediate10to1 + "0")
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rd_value = PC + 4
+    Register_Value_Dictionary[rd] = str(rd_value)
+    Register_Value_Dictionary["x0"] = "0"
+    FinalPCstring = decimaltobinary(immediate)
+    FinalPCstring = FinalPCstring[:31] + "0"
+    Final =  twos_complement(FinalPCstring)
+    return Final
+
 
 def errorinstructionnotfound():
 
     print("error: instruction not found")
 
 
+Trace_list = []
+instruction_list = readfile("simple_5.txt")
 
-Instruction_Executor(instruction_list, Written_Instruction_List)
+Instruction_Memory = instructioncreation(instruction_list)
+print(Instruction_Memory)
+
+Instruction_Executor(instruction_list, Instruction_Memory)
 Final_Memory_list = []
 def display_register_values(list):
 
