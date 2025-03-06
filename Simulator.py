@@ -112,6 +112,41 @@ Data_Memory_Dictionary = {
     "0x0001007C" : "0"
 }
 
+Stack_Memory_Dictionary = {
+    "0x00000100" : "0",
+    "0x00000104" : "0",
+    "0x00000108" : "0",
+    "0x0000010C" : "0",
+    "0x00000110" : "0",
+    "0x00000114" : "0",
+    "0x00000118" : "0",
+    "0x0000011C" : "0",
+    "0x00000120" : "0",
+    "0x00000124" : "0",
+    "0x00000128" : "0",
+    "0x0000012C" : "0",
+    "0x00000130" : "0",
+    "0x00000134" : "0",
+    "0x00000138" : "0",
+    "0x0000013C" : "0",
+    "0x00000140" : "0",
+    "0x00000144" : "0",
+    "0x00000148" : "0",
+    "0x0000014C" : "0",
+    "0x00000150" : "0",
+    "0x00000154" : "0",
+    "0x00000158" : "0",
+    "0x0000015C" : "0",
+    "0x00000160" : "0",
+    "0x00000164" : "0",
+    "0x00000168" : "0",
+    "0x0000016C" : "0",
+    "0x00000170" : "0",
+    "0x00000174" : "0",
+    "0x00000178" : "0",
+    "0x0000017C" : "0"
+}
+
 def Identify_Intrusction_Dictionary(PC, dictionary):
     string = dictionary[PC]
     func3 = string[17:20]
@@ -363,8 +398,7 @@ def lw(string):
     if memory_adress in Data_Memory_Dictionary:
         data_from_memory = Data_Memory_Dictionary[memory_adress]
     else:
-        stack_memory[memory_adress] = "0"
-        data_from_memory = stack_memory[memory_adress]
+        data_from_memory = Stack_Memory_Dictionary[memory_adress]
     Register_Value_Dictionary[rd] = data_from_memory
     Register_Value_Dictionary["x0"] = "0"
     return
@@ -402,7 +436,7 @@ def sw(string):
         return
 
     else:
-        stack_memory[memory_adress] = Register_Value_Dictionary[rs2]
+        Stack_Memory_Dictionary[memory_adress] = Register_Value_Dictionary[rs2]
         Register_Value_Dictionary["x0"] = "0"
         return
 
