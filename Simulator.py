@@ -8,6 +8,7 @@ def readfile(file_path):
     
     return list
 
+#PRANAV-start
 Binary_Address_to_CommonName_Dic = {
     "00000" : "x0",
     "00001" : "x1",
@@ -201,7 +202,11 @@ def Identify_Intrusction_Dictionary(PC, dictionary):
         return "jal"
     else:
         return -1
-    
+
+#PRANAV-end
+
+
+
 def instructioncreation(list):
     Instructionrecognised = {}
     PC = 0
@@ -343,29 +348,12 @@ def display_register_values(PC, Register_Value_Dictionary):
     string = string + "\n"
     return string
 
-def add(string):
-    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
-    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
-    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
-    rd_value = int(Register_Value_Dictionary[rs1]) + int(Register_Value_Dictionary[rs2])
-    Register_Value_Dictionary[rd] = str(rd_value)
-    Register_Value_Dictionary["x0"] = "0"
-    return
-
-def sub(string):
-    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
-    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
-    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
-    rd_value = int(Register_Value_Dictionary[rs1]) - int(Register_Value_Dictionary[rs2])
-    Register_Value_Dictionary[rd] = str(rd_value)
-    Register_Value_Dictionary["x0"] = "0"
-    return
 
 #BONUS
 #BONUS
 #BONUS
 #BONUS
-
+#NIPUN START
 def rst(Register_Value_Dictionary):
     for key, value in Register_Value_Dictionary.items():
         if key == "x0":
@@ -397,10 +385,30 @@ def rvrs(string):
     Register_Value_Dictionary["x0"] = "0"
     return
 
+#NIPUN END
 #BONUS
 #BONUS
 #BONUS
 #BONUS
+
+#NASIR START
+def add(string):
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
+    rd_value = int(Register_Value_Dictionary[rs1]) + int(Register_Value_Dictionary[rs2])
+    Register_Value_Dictionary[rd] = str(rd_value)
+    Register_Value_Dictionary["x0"] = "0"
+    return
+
+def sub(string):
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
+    rd_value = int(Register_Value_Dictionary[rs1]) - int(Register_Value_Dictionary[rs2])
+    Register_Value_Dictionary[rd] = str(rd_value)
+    Register_Value_Dictionary["x0"] = "0"
+    return
 
 def slt(string):
     rd = Binary_Address_to_CommonName_Dic[string[20:25]]
@@ -502,6 +510,10 @@ def lw(string):
     Register_Value_Dictionary[rd] = data_from_memory
     Register_Value_Dictionary["x0"] = "0"
     return
+
+#NASIR END
+
+#RHYTHM START
 
 def jalr(PC,string):
     rd = Binary_Address_to_CommonName_Dic[string[20:25]]
@@ -609,7 +621,7 @@ def jal(PC,string):
     Final =  twos_complement(FinalPCstring)
     return Final
 
-
+#RHYTHM END
 def errorinstructionnotfound():
 
     print("error: instruction not found")
