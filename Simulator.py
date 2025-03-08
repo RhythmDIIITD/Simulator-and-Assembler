@@ -166,6 +166,8 @@ def Identify_Intrusction_Dictionary(PC, dictionary):
         
     elif func3 == "001" and opcode == "0000000":
         return "rst"
+    elif func3 == "010" and opcode == "0000000":
+        return "halt"
         
 #BONUS
 #BONUS
@@ -257,6 +259,10 @@ def Instruction_Executor(listbinary, dictionary):
             rst(Register_Value_Dictionary)
             PC = PC + 4
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+
+        elif instruction == "halt":
+            Trace_list.append(display_register_values(PC+4, Register_Value_Dictionary))
+            break
 
 #BONUS
 #BONUS
