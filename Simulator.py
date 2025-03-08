@@ -157,6 +157,17 @@ def Identify_Intrusction_Dictionary(PC, dictionary):
             return "add"
         elif string[0:7] == "0100000":
             return "sub"
+#BONUS
+#BONUS
+#BONUS
+#BONUS
+        elif string[0:7] == "0000001":
+            return "mul"
+        
+#BONUS
+#BONUS
+#BONUS
+#BONUS
     elif func3 == "010" and opcode == "0110011":
         return "slt"
     elif func3 == "101" and opcode == "0110011":
@@ -202,6 +213,13 @@ def decimaltobinary(number):
 
 def Instruction_Executor(listbinary, dictionary):
     PC = 0
+    if listbinary[-1] == "00000000000000000000000001100011":
+        pass
+    else:
+        Trace_list.clear()
+        Trace_list.append("Error: Last Instruction is not halt")
+        return
+
     for i in range(0,10000):
         if dictionary[PC] == "00000000000000000000000001100011":
             Trace_list.append(display_register_values(PC+4, Register_Value_Dictionary))
@@ -223,6 +241,19 @@ def Instruction_Executor(listbinary, dictionary):
             sub(dictionary[PC])
             PC = PC + 4
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+#BONUS
+#BONUS
+#BONUS
+#BONUS
+        elif instruction == "mul":
+            mul(dictionary[PC])
+            PC = PC + 4
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+
+#BONUS
+#BONUS
+#BONUS
+#BONUS
         elif instruction == "slt":
             slt(dictionary[PC])
             PC = PC + 4
@@ -308,6 +339,25 @@ def sub(string):
     Register_Value_Dictionary[rd] = str(rd_value)
     Register_Value_Dictionary["x0"] = "0"
     return
+
+#BONUS
+#BONUS
+#BONUS
+#BONUS
+
+def mul(string):
+    rd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
+    rd_value = int(Register_Value_Dictionary[rs1])*int(Register_Value_Dictionary[rs2])
+    Register_Value_Dictionary[rd] = str(rd_value)
+    Register_Value_Dictionary["x0"] = "0"
+    return
+
+#BONUS
+#BONUS
+#BONUS
+#BONUS
 
 def slt(string):
     rd = Binary_Address_to_CommonName_Dic[string[20:25]]
@@ -554,6 +604,8 @@ for line in instruction_list:
             pass
         else:
             display_register_values(Final_Memory_list)
+
+
 
 
 def outputfile(file_path,list1,list2):
