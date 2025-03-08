@@ -168,6 +168,8 @@ def Identify_Intrusction_Dictionary(PC, dictionary):
         return "rst"
     elif func3 == "010" and opcode == "0000000":
         return "halt"
+    elif func3 == "011" and opcode == "0000000":
+        return "rvrs"
         
 #BONUS
 #BONUS
@@ -263,6 +265,11 @@ def Instruction_Executor(listbinary, dictionary):
         elif instruction == "halt":
             Trace_list.append(display_register_values(PC+4, Register_Value_Dictionary))
             break
+
+        elif instruction == "rvrs":
+            rvrs(dictionary[PC])
+            PC = PC + 4
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
 
 #BONUS
 #BONUS
@@ -372,6 +379,21 @@ def mul(string):
     rs2 = Binary_Address_to_CommonName_Dic[string[7:12]]
     rd_value = int(Register_Value_Dictionary[rs1])*int(Register_Value_Dictionary[rs2])
     Register_Value_Dictionary[rd] = str(rd_value)
+    Register_Value_Dictionary["x0"] = "0"
+    return
+
+def rvrs(string):
+    rs1 = Binary_Address_to_CommonName_Dic[string[12:17]]
+    rsd = Binary_Address_to_CommonName_Dic[string[20:25]]
+    rs1_binary = decimaltobinary(int(Register_Value_Dictionary[rs1]))
+    listrs1 = []
+    for i in range(0, len(rs1_binary)):
+        listrs1.append(rs1_binary[i])
+    listrs1.reverse()
+    rd_value = ""
+    for i in range(0, len(listrs1)):
+        rd_value = rd_value + listrs1[i]
+    Register_Value_Dictionary[rsd] = str(twos_complement(rd_value))
     Register_Value_Dictionary["x0"] = "0"
     return
 

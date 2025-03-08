@@ -1,5 +1,5 @@
-inputfile = "bruh.txt"
-outputfile = "C:/Users/Rhythm/Desktop/Group_071/automatedTesting/tests/traces/simple/simple_1.txt"
+inputfile = "bruh5.txt"
+outputfile = "C:/Users/Rhythm/Desktop/Group_071/automatedTesting/tests/traces/simple/simple_5.txt"
 
 def files_are_identical(file1, file2):
     with open(file1, 'r') as f1, open(file2, 'r') as f2:
