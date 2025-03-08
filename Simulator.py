@@ -182,7 +182,7 @@ def Identify_Intrusction_Dictionary(PC, dictionary):
     elif opcode == "1101111":
         return "jal"
     else:
-        return "error"
+        return -1
     
 def instructioncreation(list):
     Instructionrecognised = {}
@@ -209,6 +209,12 @@ def Instruction_Executor(listbinary, dictionary):
         if PC not in dictionary:
             break
         instruction = Identify_Intrusction_Dictionary(PC, dictionary)
+        if instruction == -1:
+            Trace_list.clear()
+            Trace_list.append("Error: Instruction Not Defined at line" + str((PC//4)+1))
+            break
+
+
         if instruction == "add":
             add(dictionary[PC])
             PC = PC + 4
@@ -360,6 +366,7 @@ def andfunction(string):
     rd_value = ""
     for i in range(len(rs2_binary)):
         if rs2_binary[i] == "1" and rs1_binary[i] == "1":
+        
             rd_value = rd_value + "1"
         elif rs2_binary[i] == "1" and rs1_binary[i] == "0":
             rd_value = rd_value + "0"
@@ -537,7 +544,16 @@ def display_register_values(list):
 
     return
 
-display_register_values(Final_Memory_list)
+for line in instruction_list:
+    if len(line) != 32:
+        Trace_list.clear()
+        Trace_list.append("Error: Instruction Length is not 32 bits at line" + str(instruction_list.index(line)+1))
+        break
+    else:
+        if len(Trace_list) == 1:
+            pass
+        else:
+            display_register_values(Final_Memory_list)
 
 
 def outputfile(file_path,list1,list2):
