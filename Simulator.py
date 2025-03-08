@@ -164,6 +164,9 @@ def Identify_Intrusction_Dictionary(PC, dictionary):
         elif string[0:7] == "0000001":
             return "mul"
         
+    elif func3 == "001" and opcode == "0000000":
+        return "rst"
+        
 #BONUS
 #BONUS
 #BONUS
@@ -247,6 +250,11 @@ def Instruction_Executor(listbinary, dictionary):
 #BONUS
         elif instruction == "mul":
             mul(dictionary[PC])
+            PC = PC + 4
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+
+        elif instruction == "rst":
+            rst(Register_Value_Dictionary)
             PC = PC + 4
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
 
@@ -344,6 +352,13 @@ def sub(string):
 #BONUS
 #BONUS
 #BONUS
+
+def rst(Register_Value_Dictionary):
+    for key, value in Register_Value_Dictionary.items():
+        if key == "x0":
+            Register_Value_Dictionary[key] = "0"
+        else:
+            Register_Value_Dictionary[key] = "0"
 
 def mul(string):
     rd = Binary_Address_to_CommonName_Dic[string[20:25]]
