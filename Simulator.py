@@ -7,7 +7,7 @@ def readfile(file_path):
             list.append(line.strip())
     
     return list
-
+Final_Memory_list = []
 #PRANAV-start
 Binary_Address_to_CommonName_Dic = {
     "00000" : "x0",
@@ -205,7 +205,13 @@ def Identify_Intrusction_Dictionary(PC, dictionary):
 
 #PRANAV-end
 
+def display_memory_values(list):
 
+    for key, value in Data_Memory_Dictionary.items():
+        string = key + ":" + "0b" + decimaltobinary(value)
+        list.append(string)
+
+    return
 
 def instructioncreation(list):
     Instructionrecognised = {}
@@ -234,7 +240,8 @@ def Instruction_Executor(listbinary, dictionary):
 
     for i in range(0,10000):
         if dictionary[PC] == "00000000000000000000000001100011":
-            Trace_list.append(display_register_values(PC+4, Register_Value_Dictionary))
+            Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
+            display_memory_values(Final_Memory_list)
             break
         if PC not in dictionary:
             break
@@ -608,10 +615,10 @@ def blt(PC,string):
 
 def jal(PC,string):
     immediate20th = string[0]
-    immediate19to12 = string[12:18]
+    immediate19to12 = string[12:20]
     immediate11th = string[11]
     immediate10to1 = string[1:11]
-    immediate = twos_complement(immediate20th + immediate19to12 + immediate11th + immediate10to1)
+    immediate = twos_complement(immediate20th + immediate19to12 + immediate11th + immediate10to1 + "0")
     rd = Binary_Address_to_CommonName_Dic[string[20:25]]
     rd_value = PC + 4
     Register_Value_Dictionary[rd] = str(rd_value)
@@ -631,7 +638,8 @@ if len(sys.argv) != 3:
     sys.exit(1)
 
 file_path = sys.argv[1] 
-outputfilepath = sys.argv[2]   
+
+outputfilepath = sys.argv[2]
 
 Trace_list = []
 instruction_list = readfile(file_path)
@@ -640,14 +648,8 @@ Instruction_Memory = instructioncreation(instruction_list)
 
 
 Instruction_Executor(instruction_list, Instruction_Memory)
-Final_Memory_list = []
-def display_register_values(list):
 
-    for key, value in Data_Memory_Dictionary.items():
-        string = key + ":" + "0b" + decimaltobinary(value)
-        list.append(string)
 
-    return
 
 for line in instruction_list:
     if len(line) != 32:
@@ -657,8 +659,6 @@ for line in instruction_list:
     else:
         if len(Trace_list) == 1:
             pass
-        else:
-            display_register_values(Final_Memory_list)
 
 
 

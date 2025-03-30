@@ -1,5 +1,5 @@
-inputfile = "bruh5.txt"
-outputfile = "C:/Users/Rhythm/Desktop/Group_071/automatedTesting/tests/traces/simple/simple_5.txt"
+inputfile = "C:/Users/Rhythm/Downloads/final_valuation_framework_mar30_2025_students_v5/final_valuation_framework_mar30_2025_students_v5/automatedTesting/tests/user_traces/simple/bruh10.txt"
+outputfile = "C:/Users/Rhythm/Downloads/final_valuation_framework_mar30_2025_students_v5/final_valuation_framework_mar30_2025_students_v5/automatedTesting/tests/traces/simple/simple_10.txt"
 
 def files_are_identical(file1, file2):
     with open(file1, 'r') as f1, open(file2, 'r') as f2:
@@ -12,6 +12,8 @@ def files_are_identical(file1, file2):
         return True
 
 if files_are_identical(inputfile, outputfile):
+    print(inputfile[160:])
+    print(outputfile[160:])
     print("The files have the exact same content.")
 else:
     print("The files do not have the same content.")
