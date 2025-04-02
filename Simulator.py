@@ -110,7 +110,8 @@ Data_Memory_Dictionary = {
     "0x00010070" : "0",
     "0x00010074" : "0",
     "0x00010078" : "0",
-    "0x0001007C" : "0"
+    "0x0001007C" : "0",
+    "0x0001007F" : "0"
 }
 
 Stack_Memory_Dictionary = {
@@ -145,7 +146,9 @@ Stack_Memory_Dictionary = {
     "0x00000170" : "0",
     "0x00000174" : "0",
     "0x00000178" : "0",
-    "0x0000017C" : "0"
+    "0x0000017C" : "0",
+    "0x0000017F" : "0"
+
 }
 
 def Identify_Intrusction_Dictionary(PC, dictionary):
@@ -308,32 +311,73 @@ def Instruction_Executor(listbinary, dictionary):
             PC = PC + 4
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
         elif instruction == "lw":
+            rd = Binary_Address_to_CommonName_Dic[dictionary[PC][20:25]]
+            rs1 = Binary_Address_to_CommonName_Dic[dictionary[PC][12:17]]
+            immediate = twos_complement(dictionary[PC][0:12])
+            memory_adress_integer = int(Register_Value_Dictionary[rs1]) + immediate
+            memory_adress = decimaltohex(memory_adress_integer)
+            if memory_adress not in Data_Memory_Dictionary and memory_adress not in Stack_Memory_Dictionary:
+                Trace_list.clear()
+                Trace_list.append("Error: Memory Address not found")
+                break
             lw(dictionary[PC])
             PC = PC + 4
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
         elif instruction == "jalr":
             jalr(PC,dictionary[PC])
             nextPC = jalrJUMP(PC,dictionary[PC])
+            if nextPC%4!=0:
+                Trace_list.clear()
+                Trace_list.append("Error: PC Update not a multiple of 4")
+                break
+
             PC = nextPC
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
         elif instruction == "sw":
+            rs2 = Binary_Address_to_CommonName_Dic[dictionary[PC][7:12]]
+            rs1 = Binary_Address_to_CommonName_Dic[dictionary[PC][12:17]]
+            immediate1 = dictionary[PC][0:7]
+            immediate2 = dictionary[PC][20:25]
+            immediate = twos_complement(immediate1 + immediate2)
+            memory_adress_integer = int(Register_Value_Dictionary[rs1]) + immediate
+            memory_adress = decimaltohex(memory_adress_integer)
+            if memory_adress not in Data_Memory_Dictionary and memory_adress not in Stack_Memory_Dictionary:
+                Trace_list.clear()
+                Trace_list.append("Error: Memory Address not found")
+                break
             sw(dictionary[PC])
             PC = PC + 4
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
         elif instruction == "beq":
             nextPC = beq(PC,dictionary[PC])
+            if nextPC%4!=0:
+                Trace_list.clear()
+                Trace_list.append("Error: PC Update not a multiple of 4")
+                break
             PC = nextPC
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
         elif instruction == "bne":
             nextPC = bne(PC,dictionary[PC])
+            if nextPC%4!=0:
+                Trace_list.clear()
+                Trace_list.append("Error: PC Update not a multiple of 4")
+                break
             PC = nextPC
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
         elif instruction == "blt":
             nextPC = blt(PC,dictionary[PC])
+            if nextPC%4!=0:
+                Trace_list.clear()
+                Trace_list.append("Error: PC Update not a multiple of 4")
+                break
             PC = nextPC
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
         elif instruction == "jal":
             nextPC = jal(PC,dictionary[PC])
+            if nextPC%4!=0:
+                Trace_list.clear()
+                Trace_list.append("Error: PC Update not a multiple of 4")
+                break
             PC = nextPC
             Trace_list.append(display_register_values(PC, Register_Value_Dictionary))
         else:

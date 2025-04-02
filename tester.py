@@ -1,4 +1,4 @@
-inputfile = "C:/Users/Rhythm/Downloads/final_valuation_framework_mar30_2025_students_v5/final_valuation_framework_mar30_2025_students_v5/automatedTesting/tests/user_traces/simple/bruh10.txt"
+inputfile = "bruh10.txt"
 outputfile = "C:/Users/Rhythm/Downloads/final_valuation_framework_mar30_2025_students_v5/final_valuation_framework_mar30_2025_students_v5/automatedTesting/tests/traces/simple/simple_10.txt"
 
 def files_are_identical(file1, file2):
